@@ -4,6 +4,8 @@
 
     $acao = isset($_GET['acao']) ? $_GET['acao'] : null;
     $id = isset($_GET['id']) ? $_GET['id'] : null;
+    
+    $idSelecionado = isset($_GET['idSelecionado']) ? $_GET['idSelecionado'] : '';
 
     $nome = isset($_GET['nome']) ? $_GET['nome'] : null;
     $idade = isset($_GET['idade']) ? $_GET['idade'] : null;
@@ -20,11 +22,15 @@
     if($acao == "excluir") {
         $p->excluir($id);
     }
-
+   
     // Inserção
-    if ($nome) {
+    if (!$idSelecionado && $acao == 'cadastrar') {
         $p->inserir($nome, $idade);
-        header('Location: index.php');
+    } 
+
+    // Confirma edição
+    if ($idSelecionado && $acao == 'editar')  {
+       $p->atualizar($nome, $idade, $idSelecionado);
     }
 
     // Lista de pessoas
@@ -41,7 +47,12 @@
 <body>
 
     <form action="#" method="get">
+        <input type="hidden" name="idSelecionado" 
+               value="<?php echo isset($pessoaSelecionada['id']) ? $pessoaSelecionada['id'] : '' ?>">
 
+        <input type="hidden" name="acao" 
+               value="<?php echo isset($pessoaSelecionada['id']) ? 'editar' : 'cadastrar' ?>">
+               
         Nome: <input type="text" name="nome" required 
                      value="<?php echo isset($pessoaSelecionada['nome']) ? $pessoaSelecionada['nome'] : '' ?>">
         Idade: <input type="number" name="idade" 
